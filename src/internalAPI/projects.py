@@ -1,20 +1,13 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify
 import os
 import json
 
 def projects_route(subpath=""):
     if subpath == '':
         return jsonify({"status": "error", "error": "project path not provided"}), 400
-    # Set CORS headers
-    response = make_response()
-    response.headers["Access-Control-Allow-Origin"] = os.getenv('HOSTED_ON')
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT"
-    response.headers["Access-Control-Allow-Headers"] = "x-requested-with,x-token,accept-language,accept,accept-version,content-type,request-id,origin,x-api-version,x-request-id"
-
     # Handle OPTIONS requests
     if request.method == 'OPTIONS':
-        return response
+        return ""
 
     elif request.method == 'PUT':
         # Save to server logic (authentication and saving JSON file)

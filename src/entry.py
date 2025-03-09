@@ -1,8 +1,16 @@
 from flask import Flask, jsonify
 from internalAPI import register_routes
 import os
+from dotenv import load_dotenv
+from flask_cors import CORS
+
+
+load_dotenv()
 
 app = Flask(__name__)
+
+CORS(app, supports_credentials=True, origins=[os.getenv('HOSTED_ON')])
+
 
 print("DEBUG: ", os.getenv('DEBUG'))
 

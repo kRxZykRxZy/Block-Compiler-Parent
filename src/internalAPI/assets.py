@@ -1,4 +1,4 @@
-from flask import request, jsonify, make_response, send_file
+from flask import request, jsonify, send_file
 import os
 
 default_sprites = [
@@ -1253,11 +1253,7 @@ default_sprites = [
 def assets_route(subpath=''):
     if subpath == '':
         return jsonify({"status": "error", "error": "No file requested"}), 500
-    # Set CORS headers
-    response = make_response()
-    response.headers["Access-Control-Allow-Origin"] = os.getenv('HOSTED_ON')
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-
+    
     if request.method == 'POST':  # Update Asset
         # Extract the payload path from the request URI
         payload_path = f'app/internalAPI/projectData/ProjectAssets/{subpath}'
