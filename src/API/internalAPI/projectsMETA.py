@@ -14,38 +14,7 @@ def projectsMETA_route():
     # Handle OPTIONS requests
     if request.method == 'OPTIONS':
         return response
-
-    elif request.method == 'PUT':
-        # Extract payload from URL
-        uri = request.url
-        payload_index = uri.find('?/')
-        if payload_index != -1:
-            payload = uri[payload_index + 2:]
-        else:
-            payload = ""
-
-        # Validate payload contains only numbers
-        if not payload.isdigit():
-            return jsonify({"status": "error", "error": "Invalid requested file"}), 500
-
-        # Read the input data
-        data = request.data
-        if not data:
-            return jsonify({"status": "error", "error": "No payload given"}), 500
-
-        # Save data to the specified JSON file
-        filepath = f'app/internalAPI/projectData/projectData/{payload}.json'
-        try:
-            with open(filepath, 'wb') as file:
-                file.write(data)
-
-            if os.path.exists(filepath):
-                return jsonify({"status": "ok", "autosave-interval": "120"}), 200
-            else:
-                return jsonify({"status": "error", "error": "Could not save file"}), 500
-        except Exception as e:
-            return jsonify({"status": "error", "error": f"Could not save file: {str(e)}"}), 500
-
+    
     elif request.method == 'GET':
         # Respond with static metadata
         metadata = {
