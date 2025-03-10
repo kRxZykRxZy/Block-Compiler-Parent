@@ -3,18 +3,26 @@ import os
 import json
 
 def projects_route(subpath=""):
-    if subpath == '':
-        return jsonify({"status": "error", "error": "project path not provided"}), 400
-    
+    if request.method == 'POST':
+        # Logic to ensure the user is authorized to create a new project (to be implemented)
+        # Logic to update DB & files for project creation (to be implemented)
+        return jsonify({"status": "ok", "content-name": "1", "content-title": "untitled", "autosave-interval": "120"})
+
+
+
+    # OPTIONS requests
     if request.method == 'OPTIONS':
         return ""
 
+    # PUT and GET requests
+
+    if subpath == '':
+        return jsonify({"status": "error", "error": "project path not provided"}), 400
+    
     project_id = subpath.split("/")[0]
     #make sure it is a number
     if not project_id.isdigit():
-            return jsonify({"status": "error", "error": "project id must be a number"}), 400
-    # Handle OPTIONS requests
-    
+            return jsonify({"status": "error", "error": "project id must be a number"}), 400    
 
     elif request.method == 'PUT':
         # Save to server logic (authentication and saving JSON file)
@@ -25,7 +33,7 @@ def projects_route(subpath=""):
         project_data = request.json
         if(project_data is None):
             return jsonify({"status": "error", "error": "no project data provided"}), 400
-        project_file_path = f'app/internalAPI/projectData/projectData/{project_id}.json'
+        project_file_path = f'app/storage/projectData/projectData/{project_id}.json'
 
         if not os.path.exists(project_file_path):
             return jsonify({"status": "error", "error": "project does not exist"}), 404
@@ -41,17 +49,12 @@ def projects_route(subpath=""):
     elif request.method == 'GET':
         # Logic to check if project is public or accessible (to be implemented)
         try:
-            with open(f'app/internalAPI/projectData/projectData/{project_id}.json', 'r') as file:
+            with open(f'app/storage/projectData/projectData/{project_id}.json', 'r') as file:
                 data = json.load(file)
         except FileNotFoundError:
             return jsonify({"status": "error", "error": "torch does not exist"}), 404
 
         return jsonify(data)
-
-    elif request.method == 'POST':
-        # Logic to ensure the user is authorized to create a new project (to be implemented)
-        # Logic to update DB & files for project creation (to be implemented)
-        return jsonify({"status": "ok", "content-name": "1", "content-title": "untitled", "autosave-interval": "120"})
 
     else:
         return jsonify({"status": "error", "error": "method not implemented"}), 405

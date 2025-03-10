@@ -13,12 +13,8 @@ def projectsMETA_route():
         metadata = {
             "id": "32",
             "title": "Waterfall Plains v1.0",
-            "description": "%3Cp%3EPart%20of%20%40Titanium01%20's%20Scratch%20Project%20Archive%3C%2Fp%3E",
             "visibility": "true",
-            "public": "true",
-            "comments_allowed": "true",
-            "is_published": "true",
-            "tags": "",
+            "isOwner": "false",
             "author": {
                 "DisplayName": "Titanium",
                 "username": "Titanium",
@@ -33,23 +29,6 @@ def projectsMETA_route():
                         "32x32": "/IMGStorage/Logos/Titanium.jpeg?width=32&height=32",
                     },
                 },
-            },
-            "linked": 0,
-            "history": {
-                "created": 1719196563780,
-                "modified": 1719264762146,
-                "shared": 1719196614032,
-            },
-            "stats": {"views": 6, "loves": 1, "likes": 1, "remixes": 0},
-            "remixed": {"remixed": "", "id": 0, "project": []},
-            "project_token": "NotApplicable",
-            "canEdit": "false",
-            "personalData": {
-                "isLoved": "false",
-                "isLiked": "false",
-                "isDisliked": "false",
-                "YouFollow": "false",
-                "yourPFP": "DPFP.png",
             },
         }
         return jsonify(metadata)

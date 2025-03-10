@@ -1256,7 +1256,7 @@ def assets_route(subpath=''):
     
     if request.method == 'POST':  # Update Asset
         # Extract the payload path from the request URI
-        payload_path = f'app/internalAPI/projectData/ProjectAssets/{subpath}'
+        payload_path = f'app/storage/projectData/ProjectAssets/{subpath}'
         
         # Read the raw request data
         data = request.get_data()
@@ -1285,7 +1285,7 @@ def assets_route(subpath=''):
                 return jsonify({"status": "error", "error": "file not found"}), 404
 
         # Check for the requested file in ProjectAssets
-        payload_path = f'internalAPI/projectData/projectAssets/{subpath}'
+        payload_path = f'storage/projectData/projectAssets/{subpath}'
         if os.path.exists('app/'+payload_path):
             return send_file(payload_path)
         else:

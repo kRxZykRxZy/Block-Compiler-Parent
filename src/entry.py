@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from internalAPI import register_routes
+from API import register_routes
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
