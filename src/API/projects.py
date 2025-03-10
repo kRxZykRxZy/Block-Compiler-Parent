@@ -1,11 +1,10 @@
 from flask import request, jsonify
-import os
-import json
+
 
 import API.services as services
 def projects_route(subpath=""):
     if request.method == 'POST':
-        return services.createNewProject()
+        return services.createNewProject(request)
 
     # OPTIONS requests
     if request.method == 'OPTIONS':
@@ -24,14 +23,6 @@ def projects_route(subpath=""):
     elif request.method == 'PUT':
         return services.saveProject(request, project_id)
     elif request.method == 'GET':
-        # Logic to check if project is public or accessible (to be implemented)
-        try:
-            with open(f'app/storage/projectData/projectData/{project_id}.json', 'r') as file:
-                data = json.load(file)
-        except FileNotFoundError:
-            return jsonify({"status": "error", "error": "torch does not exist"}), 404
-
-        return jsonify(data)
-
+        return services.loadProject(project_id,request)
     else:
         return jsonify({"status": "error", "error": "method not implemented"}), 405

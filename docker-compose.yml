@@ -10,6 +10,7 @@ services:
       DEBUG: ${DEBUG}
     volumes:
       - ./src:/app:rw
+      - .env:/app/.env:ro
     networks:
       - connector
     ports:
