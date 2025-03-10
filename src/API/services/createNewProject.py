@@ -1,20 +1,9 @@
 from flask import jsonify
 import mysql.connector
-import os
 import json
 
 
-def get_db_connection():
-    """Establishes and returns a MySQL database connection."""
-    try:
-        return mysql.connector.connect(
-            host="mysql",
-            user="root",
-            password=os.getenv("MYSQL_ROOT_PASSWORD"),
-            database="projects"
-        )
-    except mysql.connector.Error as err:
-        raise Exception(f"Error connecting to database: {err}")
+from API.services.helpers import get_db_connection , verifyToken
 
 
 def insert_new_project(cursor, is_shared, owner, shared_ts):
@@ -46,11 +35,20 @@ def createNewProject(request):
         # Step 1: Establish DB connection
         db_connection = get_db_connection()
         cursor = db_connection.cursor()
-
+        
+        
         # Step 2: Insert new project into the database
         is_shared = 0
-        owner = "John Doe"
+        owner = request.args.get('username')
+        token = request.args.get('token')
         shared_ts = "2000-01-01 12:00:00"
+
+        if(owner == None or token == None):
+            return jsonify({"status": "error", "message": "Missing username or token"}), 400
+
+        if not verifyToken(token, owner):
+            return jsonify({"status": "error", "message": "Invalid token"}), 403
+    
         project_id = insert_new_project(cursor, is_shared, owner, shared_ts)
 
         # Step 3: Commit the transaction
