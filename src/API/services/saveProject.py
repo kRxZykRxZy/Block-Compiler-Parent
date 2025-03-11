@@ -36,7 +36,7 @@ def saveProject(request, project_id):
                 "message": "Missing token"
             }), 400
         db_connection = get_db_connection()
-        cursor = db_connection.cursor()
+        cursor = db_connection.cursor(dictionary=True)
 
         # Step 2: Query the database for the project
         query = "SELECT Owner FROM projects WHERE projectID = %s"
