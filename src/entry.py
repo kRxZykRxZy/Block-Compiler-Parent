@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from API import register_routes
+from InternalAPI import internal_register_routes
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -44,6 +45,7 @@ def page_not_found(e):
 
     
 register_routes(app)
+internal_register_routes(app)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=(os.getenv('DEBUG') == 'True'))
