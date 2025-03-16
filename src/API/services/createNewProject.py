@@ -6,14 +6,14 @@ import json
 from API.services.helpers import get_db_connection , verifyToken
 
 
-def insert_new_project(cursor, is_shared, owner, shared_ts):
+def insert_new_project(cursor, is_shared, owner):
     """Inserts a new project into the database and returns the project ID."""
     insert_query = """
-    INSERT INTO projects (isShared, Owner, SharedTS, Title)
-    VALUES (%s, %s, %s, %s)
+    INSERT INTO projects (isShared, Owner, Title)
+    VALUES (%s, %s, %s)
     """
     try:
-        cursor.execute(insert_query, (is_shared, owner, shared_ts, "Untitled"))
+        cursor.execute(insert_query, (is_shared, owner, "Untitled"))
         return cursor.lastrowid
     except mysql.connector.Error as err:
         raise Exception(f"Error inserting new project: {err}")
@@ -41,7 +41,6 @@ def createNewProject(request):
         is_shared = 0
         owner = request.args.get('username')
         token = request.args.get('token')
-        shared_ts = "2000-01-01 12:00:00"
 
         if(owner == None or token == None):
             return jsonify({"status": "error", "message": "Missing username or token"}), 400
@@ -49,7 +48,7 @@ def createNewProject(request):
         if not verifyToken(token, owner):
             return jsonify({"status": "error", "message": "Invalid token"}), 403
     
-        project_id = insert_new_project(cursor, is_shared, owner, shared_ts)
+        project_id = insert_new_project(cursor, is_shared, owner)
 
         # Step 3: Commit the transaction
         db_connection.commit()
