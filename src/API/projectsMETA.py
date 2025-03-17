@@ -2,6 +2,20 @@ from flask import request, jsonify
 
 from API.services.helpers import get_db_connection, verifyToken
 
+def get_username_by_token(token):
+    query = "SELECT username FROM users WHERE AuthToken = %s"
+    
+    try:
+        db_connection = get_db_connection("users")
+        with db_connection.cursor(dictionary=True) as cursor:
+            cursor.execute(query, (token,))
+            user = cursor.fetchone() or {"username": ""}
+        return user
+    except Exception as err:
+        return {"username": ""}
+    finally:
+        db_connection.close()
+
 
 def projectsMETA_route():
     # Handle OPTIONS requests
@@ -49,7 +63,12 @@ def projectsMETA_route():
                         "status": "error",
                         "message": "Invalid token"
                     }), 403
-
+            # Step 4: Get the current user's username
+            user = get_username_by_token(request.args.get('token'))['username']
+            canRemix = "false"
+            if user and user != project['Owner'] and project['isShared'] == 1:
+                canRemix = "true"
+            # Step 5: Return the project metadata
             metadata = {
                 "id": project_id,
                 "title": project['Title'],
@@ -58,6 +77,9 @@ def projectsMETA_route():
                     "username": project['Owner'],
                     "history": {"joined": "1900-01-01T00:00:00.000Z"},
                 },
+                "username": user,
+                "canSave": "true" if project['Owner'] == user else "false",
+                "canRemix": canRemix
             }
             return jsonify(metadata)
 
