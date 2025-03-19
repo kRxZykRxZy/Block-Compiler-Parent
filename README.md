@@ -24,7 +24,7 @@ These are only necessary if the default versions experience issues:
 ## Requirements
 Ensure you have the following installed:
 - Docker
-- Node.js (v18 or higher recommended, v16 as a fallback)
+- Node.js (v18 or higher (v22 recommended), v16 as a fallback)
 
 ## Installation Guide
 
