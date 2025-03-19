@@ -1278,7 +1278,7 @@ def assets_route(subpath=''):
     elif request.method == 'GET':  # Returns requested assets (costume, audio, etc.)
         # Check if payload is in default sprites
         if subpath in default_sprites:
-            sprite_path = f'defaultSprites/{subpath}'
+            sprite_path = f'storage/defaultSprites/{subpath}'
             try:
                 return send_file(sprite_path)
             except FileNotFoundError:
