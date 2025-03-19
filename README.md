@@ -131,6 +131,7 @@ The CodeTorch Block Compiler communicates with the parent window using `postMess
 - `addonsPage` — Opens the add-ons page
 - `doneCreatingProject` — Signals project creation completion
 - `resizedStage` — Notifies parent of stage resize
+- `createdRemix`- Notifies parent of a remix creation
 
 ## Why CodeTorch is Not Fully Open Source
 Although the TurboWarp versions of `scratch-gui` and `scratch-vm` are licensed under GPL-3.0 (and this Block Compiler is a derivative of these works), CodeTorch is not fully open source. This is because of how CodeTorch and the CodeTorch Block Compiler are structured—they function as two separate programs, essentially keeping them at "arm's length." This setup is similar to using a GPL-3.0-licensed Software-as-a-Service (SaaS) tool, where the GPL-3.0 license applies only to the SaaS itself, not to third-party users. As a result, the rest of CodeTorch is considered a mere aggregation of the Compiler (which in this case is the `SaaS`) and is not subject to the GPL-3.0 license.
