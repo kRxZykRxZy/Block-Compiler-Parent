@@ -4,7 +4,10 @@ from flask import request, jsonify
 import API.services as services
 def projects_route(subpath=""):
     if request.method == 'POST':
-        return services.createNewProject(request)
+        if(request.args.get('is_remix') == '1'):
+            return services.remixProject(request)
+        else:
+            return services.createNewProject(request)
 
     # OPTIONS requests
     if request.method == 'OPTIONS':
