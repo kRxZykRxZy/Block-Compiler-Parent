@@ -9,6 +9,8 @@ from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageFilter
 from io import BytesIO
 import base64
+from datetime import datetime, timedelta
+import pytz
 
 from API.services.helpers import get_db_connection , verifyToken, limiter
 
@@ -63,7 +65,7 @@ def check_scratch_user(username):
 
 def verify_scratch_comment(username):
     """
-    Verifies a Scratch comment for a specific user.
+    Verifies a Scratch comment for a specific user, while ensuring it was submitted within the last 30 minutes.
     """
 
     if not username:
@@ -101,8 +103,26 @@ def verify_scratch_comment(username):
                 if content_div:
                     content = content_div.get_text(strip=True)
                     if comment_username == username and "CodeTorch Scratch Account Link Verification" in content:
-                        success = True
-                        break
+                        time_span = comment.find('span', class_='time')
+                        if time_span:
+                            timestamp_str = time_span.get('title')
+                            if timestamp_str:
+                                try:
+                                    timestamp = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%SZ')
+                                    timestamp = pytz.utc.localize(timestamp) # Ensure time is UTC
+                                    now_utc = datetime.now(pytz.utc)
+                                    time_difference = now_utc - timestamp
+                                    if time_difference <= timedelta(minutes=30):
+                                        success = True
+                                        break
+                                    else:
+                                         return {"status": "false", "error": "Comment is too old, please resubmit a new comment"}
+                                except ValueError:
+                                    return {"status": "false", "error": "Invalid timestamp format"}
+                            else:
+                                return {"status": "false", "error": "Timestamp not found"}
+                        else:
+                            return {"status": "false", "error": "Time element not found"}
         if success:
             return {"status": "true"}
         else:
@@ -114,8 +134,7 @@ def verify_scratch_comment(username):
     except requests.exceptions.RequestException as e:
         return {"status": "false", "error": f"Request Error: {e}"}
     except Exception as e:
-        return {"status": "false", "error": f"Unexpected Error: {e}"}
-
+        return {"status": "false", "error": f"Unexpected Error: {e}"}    
 def get_scratch_projects(username):
     """
     Retrieves a list of Scratch project IDs for a given user.
@@ -454,7 +473,6 @@ def internal():
             try:
                 # load the users projects
                 projects = get_scratch_projects(ScratchUsername)
-                yield f"debug {json.dumps({'status': 'debug', 'step':'getProjects', 'message': projects})}\n\n"
                 if projects['status'] == "false":
                     yield f"data: {json.dumps({'status': 'error', 'step:':'getProjects', 'message': projects['error']})}\n\n"
                     return
