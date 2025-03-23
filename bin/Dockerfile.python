@@ -4,7 +4,7 @@ FROM python:3.9
 
 RUN pip install --upgrade pip
 
-RUN pip install flask mysql-connector-python dotenv flask-cors
+RUN pip install flask mysql-connector-python dotenv flask-cors requests beautifulsoup4 Pillow
 
 # start main.py
 CMD ["python", "app/entry.py"]
