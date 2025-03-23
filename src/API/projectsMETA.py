@@ -17,7 +17,7 @@ def get_username_by_token(token):
         db_connection.close()
 
 
-@limiter.limit("5 per minute")
+@limiter.limit("10 per minute")
 def projectsMETA_route():
     # Handle OPTIONS requests
     if request.method == 'OPTIONS':
