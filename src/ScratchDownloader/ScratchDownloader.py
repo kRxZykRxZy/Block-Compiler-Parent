@@ -46,20 +46,20 @@ def check_scratch_user(username):
         http_code = response.status_code
 
         if http_code == 404:
-            return 0
+            return {"status": "false", "error": "User not found"}
         else:
-            return 1
+            return {"status": "true"}
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
-            return 2
+            return {"status": "false", "error": "User not found"}
         else:
-            return 2
+            return {"status": "false", "error": f"HTTP Error: {e}"}
 
     except requests.exceptions.RequestException as e:
-        return 2
+        return {"status": "false", "error": f"Request Error: {e}"}
     except Exception as e:
-        return 2
+        return {"status": "false", "error": f"Unexpected Error: {e}"}
 
 def verify_scratch_comment(username):
     """
@@ -104,17 +104,17 @@ def verify_scratch_comment(username):
                         success = True
                         break
         if success:
-            return 1
+            return {"status": "true"}
         else:
-            return 0
+            return {"status": "false", "error": "Comment not found or verification failed"}
 
     except requests.exceptions.HTTPError as e:
-        return 2
+        return {"status": "false", "error": f"HTTP Error: {e}"}
 
     except requests.exceptions.RequestException as e:
-        return 2
+        return {"status": "false", "error": f"Request Error: {e}"}
     except Exception as e:
-        return 2
+        return {"status": "false", "error": f"Unexpected Error: {e}"}
 
 def get_scratch_projects(username):
     """
@@ -154,8 +154,8 @@ def get_scratch_projects(username):
 
             if page == 1:
                 box_head = soup.find_all('div', class_='box-head')
-                if len(box_head) > 1:
-                  total_projects_element = box_head[1].find('h2')
+                if len(box_head) == 1:
+                  total_projects_element = box_head[0].find('h2')
                   if total_projects_element:
                     total_projects_text = total_projects_element.get_text(strip=True)
                     start_index = total_projects_text.find("(") + 1
@@ -442,15 +442,11 @@ def internal():
         if not verifyToken(token, username):
             return jsonify({"status": "error", "message": "Invalid token"}), 403
         scratchUsernameStatus = check_scratch_user(ScratchUsername)
-        if(scratchUsernameStatus == 0):
-            return jsonify({"status": "error", "message": "Invalid Scratch username"}), 400
-        elif(scratchUsernameStatus == 2):
-            return jsonify({"status": "error", "message": "Error checking Scratch username"}), 500
+        if(scratchUsernameStatus["status"] == "false"):
+            return jsonify({"status": "error", "message": scratchUsernameStatus["error"]}), 400
         commentVerificationStatus = verify_scratch_comment(ScratchUsername)
-        if(commentVerificationStatus == 0):
-            return jsonify({"status": "error", "message": "Comment verification failed"}), 400
-        elif(commentVerificationStatus == 2):
-            return jsonify({"status": "error", "message": "Error verifying comment"}), 500
+        if(commentVerificationStatus["status"] == "false"):
+            return jsonify({"status": "error", "message": commentVerificationStatus["error"]}), 400
         # We now know that the request is authorized
         def nextStep():
             db_connection = None
