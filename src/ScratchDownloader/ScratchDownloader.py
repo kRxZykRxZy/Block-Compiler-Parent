@@ -10,8 +10,7 @@ from PIL import Image, ImageFilter
 from io import BytesIO
 import base64
 
-
-from API.services.helpers import get_db_connection , verifyToken
+from API.services.helpers import get_db_connection , verifyToken, limiter
 
 def check_scratch_user(username):
     """
@@ -427,79 +426,81 @@ def save_project_data_to_file(project_id, data):
     except FileNotFoundError:
         raise Exception(f"Failed to create project file at {file_path}")
 
-
+@limiter.limit("10/day")
+def internal():
+    token = request.json.get('token')
+    username = request.json.get('username')
+    ScratchUsername = request.json.get('ScratchUsername')
+    if(token == None or username == None):
+        return jsonify({"status": "error", "message": "Missing token or username"}), 400
+    if(ScratchUsername == None):
+        return jsonify({"status": "error", "message": "Missing ScratchUsername"}), 400
+    # Step 1: Establish DB connection
+    try:
+        db_connection = get_db_connection()
+        cursor = db_connection.cursor()
+        if not verifyToken(token, username):
+            return jsonify({"status": "error", "message": "Invalid token"}), 403
+        scratchUsernameStatus = check_scratch_user(ScratchUsername)
+        if(scratchUsernameStatus == 0):
+            return jsonify({"status": "error", "message": "Invalid Scratch username"}), 400
+        elif(scratchUsernameStatus == 2):
+            return jsonify({"status": "error", "message": "Error checking Scratch username"}), 500
+        commentVerificationStatus = verify_scratch_comment(ScratchUsername)
+        if(commentVerificationStatus == 0):
+            return jsonify({"status": "error", "message": "Comment verification failed"}), 400
+        elif(commentVerificationStatus == 2):
+            return jsonify({"status": "error", "message": "Error verifying comment"}), 500
+        # We now know that the request is authorized
+        def nextStep():
+            db_connection = None
+            cursor = None
+            try:
+                # load the users projects
+                projects = get_scratch_projects(ScratchUsername)
+                yield f"debug {json.dumps({'status': 'debug', 'step':'getProjects', 'message': projects})}\n\n"
+                if projects['status'] == "false":
+                    yield f"data: {json.dumps({'status': 'error', 'step:':'getProjects', 'message': projects['error']})}\n\n"
+                    return
+                yield f"data: {json.dumps({'status': 'success', 'step':'getProjects', 'message': 'Projects loaded successfully'})}\n\n"
+                db_connection = get_db_connection()
+                cursor = db_connection.cursor()
+                # downloads the projects
+                for projectIDscratch in projects['project_ids']:
+                    projectData = downloadProject(projectIDscratch)
+                    if projectData['status'] == "false":
+                        yield f"data: {json.dumps({'status': 'error', 'step':'downloadProject', 'message': projectData})}\n\n"
+                        return
+                    else:
+                        # actually commit projects to MYSQL
+                        projectID = insert_new_project(cursor, 0, username, projectData['projectTitle'])
+                        db_connection.commit()
+                        if projectID:
+                            save_project_data_to_file(projectID, projectData['projectData'])
+                            yield f"data: {json.dumps({'status': 'success', 'step':'downloadProject', 'message': 'Project downloaded successfully', 'projectID': projectID, 'projectData': projectData})}\n\n"
+                        else:
+                            yield f"data: {json.dumps({'status': 'error', 'step':'downloadProject', 'message': 'Failed to insert new project'})}\n\n"
+                yield f"data: {json.dumps({'status': 'success', 'step':'completed', 'message': 'All projects downloaded successfully'})}\n\n"
+            except mysql.connector.Error as err:
+                yield f"data: {json.dumps({'status': 'error', 'step':'databaseError', 'message': f'Database error: {err}'})}\n\n"
+            except Exception as err:
+                yield f"data: {json.dumps({'status': 'error', 'step':'generalError', 'message': f'General error: {err}'})}\n\n"
+            finally:
+                if cursor:
+                    cursor.close()
+                if db_connection:
+                    db_connection.close()
+        
+        return Response(stream_with_context(nextStep()), content_type='text/event-stream')
+    except mysql.connector.Error as err:
+        return jsonify({"status": "error", "message": f"Database connection error: {err}"}), 500
+    finally:
+        cursor.close()
+        db_connection.close()
 def ScratchDownloader():
     if request.method == 'OPTIONS':
         return ""
     if request.method == 'POST':
-        token = request.json.get('token')
-        username = request.json.get('username')
-        ScratchUsername = request.json.get('ScratchUsername')
-        if(token == None or username == None):
-            return jsonify({"status": "error", "message": "Missing token or username"}), 400
-        if(ScratchUsername == None):
-            return jsonify({"status": "error", "message": "Missing ScratchUsername"}), 400
-        # Step 1: Establish DB connection
-        try:
-            db_connection = get_db_connection()
-            cursor = db_connection.cursor()
-            if not verifyToken(token, username):
-                return jsonify({"status": "error", "message": "Invalid token"}), 403
-            scratchUsernameStatus = check_scratch_user(ScratchUsername)
-            if(scratchUsernameStatus == 0):
-                return jsonify({"status": "error", "message": "Invalid Scratch username"}), 400
-            elif(scratchUsernameStatus == 2):
-                return jsonify({"status": "error", "message": "Error checking Scratch username"}), 500
-            commentVerificationStatus = verify_scratch_comment(ScratchUsername)
-            if(commentVerificationStatus == 0):
-                return jsonify({"status": "error", "message": "Comment verification failed"}), 400
-            elif(commentVerificationStatus == 2):
-                return jsonify({"status": "error", "message": "Error verifying comment"}), 500
-            # We now know that the request is authorized
-            def nextStep():
-                db_connection = None
-                cursor = None
-                try:
-                    # load the users projects
-                    projects = get_scratch_projects(ScratchUsername)
-                    yield f"debug {json.dumps({'status': 'debug', 'step':'getProjects', 'message': projects})}\n\n"
-                    if projects['status'] == "false":
-                        yield f"data: {json.dumps({'status': 'error', 'step:':'getProjects', 'message': projects['error']})}\n\n"
-                        return
-                    yield f"data: {json.dumps({'status': 'success', 'step':'getProjects', 'message': 'Projects loaded successfully'})}\n\n"
-                    db_connection = get_db_connection()
-                    cursor = db_connection.cursor()
-                    # downloads the projects
-                    for projectIDscratch in projects['project_ids']:
-                        projectData = downloadProject(projectIDscratch)
-                        if projectData['status'] == "false":
-                            yield f"data: {json.dumps({'status': 'error', 'step':'downloadProject', 'message': projectData})}\n\n"
-                            return
-                        else:
-                            # actually commit projects to MYSQL
-                            projectID = insert_new_project(cursor, 0, username, projectData['projectTitle'])
-                            db_connection.commit()
-                            if projectID:
-                                save_project_data_to_file(projectID, projectData['projectData'])
-                                yield f"data: {json.dumps({'status': 'success', 'step':'downloadProject', 'message': 'Project downloaded successfully', 'projectID': projectID, 'projectData': projectData})}\n\n"
-                            else:
-                                yield f"data: {json.dumps({'status': 'error', 'step':'downloadProject', 'message': 'Failed to insert new project'})}\n\n"
-                    yield f"data: {json.dumps({'status': 'success', 'step':'completed', 'message': 'All projects downloaded successfully'})}\n\n"
-                except mysql.connector.Error as err:
-                    yield f"data: {json.dumps({'status': 'error', 'step':'databaseError', 'message': f'Database error: {err}'})}\n\n"
-                except Exception as err:
-                    yield f"data: {json.dumps({'status': 'error', 'step':'generalError', 'message': f'General error: {err}'})}\n\n"
-                finally:
-                    if cursor:
-                        cursor.close()
-                    if db_connection:
-                        db_connection.close()
-            
-            return Response(stream_with_context(nextStep()), content_type='text/event-stream')
-        except mysql.connector.Error as err:
-            return jsonify({"status": "error", "message": f"Database connection error: {err}"}), 500
-        finally:
-            cursor.close()
-            db_connection.close()
+        return internal()
     else:
         return jsonify({"status": "error", "message": "Invalid request method"}), 405

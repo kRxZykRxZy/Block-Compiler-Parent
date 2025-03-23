@@ -2,7 +2,7 @@ import os
 import json
 from flask import jsonify
 
-from API.services.helpers import get_db_connection, verifyToken
+from API.services.helpers import get_db_connection, verifyToken, limiter
 
 
 def internalSaveProject(request, project_id):
@@ -24,6 +24,7 @@ def internalSaveProject(request, project_id):
     return jsonify({"status": "ok", "autosave-interval": "120"})
 
 
+@limiter.limit("10 per minute")
 def saveProject(request, project_id):
     # (FUTURE) prevent user from uploading random JSON (validate JSON format)
 

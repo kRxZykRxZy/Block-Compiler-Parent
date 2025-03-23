@@ -1,8 +1,9 @@
 from flask import jsonify
 import json
 
-from API.services.helpers import get_db_connection, verifyToken
+from API.services.helpers import get_db_connection, verifyToken, limiter
 
+@limiter.limit("5 per minute")
 def loadProject(project_id,request):
     """
     Loads a project from a JSON file based on the project ID.

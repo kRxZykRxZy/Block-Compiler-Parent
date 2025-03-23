@@ -3,7 +3,7 @@ import mysql.connector
 import json
 
 
-from API.services.helpers import get_db_connection
+from API.services.helpers import get_db_connection,limiter
 
 
 def insert_new_project(cursor, is_shared, owner,title):
@@ -42,6 +42,7 @@ def getUsernameFromToken(token):
         cursor.close()
         db_connection.close()
 
+@limiter.limit("2 per minute")
 def remixProject(request):
     """Handles the creation of a new project and stores data."""
     try:

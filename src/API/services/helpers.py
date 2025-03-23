@@ -1,6 +1,13 @@
 import mysql.connector
 import os
 from datetime import datetime
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+# Create a global limiter instance
+limiter = Limiter(
+    get_remote_address, default_limits=[]
+)
 
 def get_db_connection(database="projects"):
     """

@@ -1,6 +1,7 @@
 from flask import request, jsonify, send_file
 import os
 
+from API.services.helpers import limiter
 default_sprites = [
     "809d9b47347a6af2860e7a3a35bce057.svg",
     "920f14335615fff9b8c55fccb8971984.svg",
@@ -1250,6 +1251,7 @@ default_sprites = [
     "01f5372ddac43001a2db4c82d71f37bb.wav"
 ]
 
+@limiter.limit("1000 per minute") # if you are loading more then 1000 assets per minute, you are doing something wrong
 def assets_route(subpath=''):
     if subpath == '':
         return jsonify({"status": "error", "error": "No file requested"}), 500

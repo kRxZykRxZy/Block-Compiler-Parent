@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from API.services.helpers import get_db_connection, verifyToken
+from API.services.helpers import get_db_connection, verifyToken, limiter
 
 def get_username_by_token(token):
     query = "SELECT username FROM users WHERE AuthToken = %s"
@@ -17,6 +17,7 @@ def get_username_by_token(token):
         db_connection.close()
 
 
+@limiter.limit("5 per minute")
 def projectsMETA_route():
     # Handle OPTIONS requests
     if request.method == 'OPTIONS':
