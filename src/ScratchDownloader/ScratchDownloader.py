@@ -341,7 +341,7 @@ def downloadProject(projectID):
             try:
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
-                file_path = f"app/storage/projectData/projectAssets/{asset}" 
+                file_path = f"storage/projectData/projectAssets/{asset}" 
                 with open(file_path, 'wb') as f:
                     f.write(response.content)
                 return (asset, True, None)
@@ -421,7 +421,7 @@ def insert_new_project(cursor, is_shared, owner, project_title):
 def save_project_data_to_file(project_id, data):
     """Saves project data to a JSON file."""
     try:
-        file_path = f'app/storage/projectData/projectData/{project_id}.json'
+        file_path = f'storage/projectData/projectData/{project_id}.json'
         with open(file_path, 'w') as file:
             file.write(json.dumps(data))
     except FileNotFoundError:

@@ -10,7 +10,7 @@ def internalSaveProject(request, project_id):
     project_data = request.json
     if(project_data is None):
         return jsonify({"status": "error", "error": "no project data provided"}), 400
-    project_file_path = f'app/storage/projectData/projectData/{project_id}.json'
+    project_file_path = f'storage/projectData/projectData/{project_id}.json'
 
     if not os.path.exists(project_file_path):
         return jsonify({"status": "error", "error": "project does not exist"}), 404

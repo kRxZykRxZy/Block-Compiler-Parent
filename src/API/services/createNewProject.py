@@ -22,7 +22,7 @@ def insert_new_project(cursor, is_shared, owner):
 def save_project_data_to_file(project_id, data):
     """Saves project data to a JSON file."""
     try:
-        file_path = f'app/storage/projectData/projectData/{project_id}.json'
+        file_path = f'storage/projectData/projectData/{project_id}.json'
         with open(file_path, 'w') as file:
             file.write(json.dumps(data))
     except FileNotFoundError:

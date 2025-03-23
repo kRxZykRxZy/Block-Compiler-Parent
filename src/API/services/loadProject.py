@@ -39,7 +39,7 @@ def loadProject(project_id,request):
                 }), 403
 
         # Step 4: Load the project data from the file
-        file_path = f'app/storage/projectData/projectData/{project_id}.json'
+        file_path = f'storage/projectData/projectData/{project_id}.json'
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
