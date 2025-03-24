@@ -1251,6 +1251,8 @@ default_sprites = [
     "01f5372ddac43001a2db4c82d71f37bb.wav"
 ]
 
+ILLEGAL_EXTENSIONS = {'.exe', '.dll', '.bat', '.sh', '.py', '.com', '.msi', '.jar', '.vbs', '.ps1', '.scr'}
+
 @limiter.limit("1000 per minute") # if you are loading more then 1000 assets per minute, you are doing something wrong
 def assets_route(subpath=''):
     if subpath == '':
@@ -1265,6 +1267,9 @@ def assets_route(subpath=''):
         if not data:
             return jsonify({"status": "error", "error": "No payload given"}), 500
 
+        # make sure the file is not illegal (EG: executable files)
+        if any(subpath.lower().endswith(ext) for ext in ILLEGAL_EXTENSIONS):
+            return jsonify({"status": "error", "error": "Illegal or unsupported file type"}), 400
         # Write data to the specified file
         try:
             with open(payload_path, 'wb') as file:
