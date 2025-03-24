@@ -476,7 +476,7 @@ def internal():
                 if projects['status'] == "false":
                     yield f"data: {json.dumps({'status': 'error', 'step:':'getProjects', 'message': projects['error']})}\n\n"
                     return
-                yield f"data: {json.dumps({'status': 'success', 'step':'getProjects', 'message': 'Projects loaded successfully'})}\n\n"
+                yield f"data: {json.dumps({'status': 'success', 'step':'getProjects', 'message': 'Projects loaded successfully', 'projectCount': projects['total_project_number']})}\n\n"
                 db_connection = get_db_connection()
                 cursor = db_connection.cursor()
                 # downloads the projects
