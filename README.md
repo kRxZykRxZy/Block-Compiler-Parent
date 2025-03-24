@@ -45,7 +45,9 @@ docker compose up -d
 - The backend server will run at `http://localhost:{HOST_MACHINE_UNSECURE_HOST_PORT}`
 - Visiting the URL should display `CodeTorch Block Compiler API is running.`
 
-### Step 4: Install the Compiler
+### Step 4: run mysql.sql to setup the databases
+Either by going inside the mysql container and running the sql file or by using the PHPMyAdmin interface.
+### Step 5: Install the Compiler
 ```bash
 cd ..
 git clone https://github.com/CodeTorchNET/CodeTorch-Block-Compiler
@@ -54,7 +56,7 @@ npm ci
 ```
 - Optionally modify `src/lib/brand.js` for branding changes.
 
-### Step 5: Run or Build the Compiler
+### Step 6: Run or Build the Compiler
 To run the compiler in development mode:
 ```bash
 PORT=1154 npm start
@@ -76,7 +78,7 @@ npm run build
 ```
 - The compiled output will be available in the `build` directory.
 
-### Step 6: Integrate with the Backend
+### Step 7: Integrate with the Backend
 - Copy the `build` folder to `Block-Compiler-Parent/src/static`
 - Access the compiler at:
   ```
@@ -84,7 +86,7 @@ npm run build
   ```
   You should `Invalid Embed`, which is expected since it is designed to run within an iframe.
 
-### Step 7: Build the Extensions Library
+### Step 8: Build the Extensions Library
 1. Clone the `turbowarp-extensions` repository:
    ```bash
    git clone https://github.com/turbowarp/extensions
