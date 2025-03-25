@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from API import register_routes
 from InternalAPI import internal_register_routes
 from ScratchDownloader import SD_register_routes
+from Torchy import torchy_routes
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
@@ -14,7 +15,7 @@ app = Flask(__name__)
 # Set up Flask-Limiter
 limiter.init_app(app)
 
-CORS(app, supports_credentials=True, origins=[os.getenv('HOSTED_ON')])
+CORS(app, supports_credentials=True, origins=[os.getenv('HOSTED_ON'),'http://localhost'])
 
 print("DEBUG: ", os.getenv('DEBUG'))
 
@@ -57,6 +58,7 @@ def too_many_requests(e):
 register_routes(app)
 internal_register_routes(app)
 SD_register_routes(app)
+torchy_routes(app)
 
 @app.route("/<path:path>", methods=["GET"])
 @cross_origin(origins="*")

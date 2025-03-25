@@ -170,3 +170,7 @@ cython_debug/
 /www/**
 .DS_Store
 /buildtest
+
+
+# Torchy
+instructions.txt

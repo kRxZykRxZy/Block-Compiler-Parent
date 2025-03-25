@@ -11,6 +11,7 @@ services:
     volumes:
       - ./src:/app:rw
       - .env:/app/.env:ro
+      - ./instructions.txt:/app/instructions.txt:ro
     networks:
       - connector
     ports:
