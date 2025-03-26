@@ -4,11 +4,10 @@ FROM python:3.9
 
 RUN pip install --upgrade pip
 
-RUN pip install flask mysql-connector-python dotenv flask-cors requests beautifulsoup4 Pillow flask-limiter redis pytz openai
+RUN pip install flask mysql-connector-python dotenv flask-cors requests beautifulsoup4 Pillow flask-limiter redis pytz openai gunicorn
 
 WORKDIR /app
 ENV PYTHONPATH=/app
 
 # start main.py
-CMD ["python", "entry.py"]
-
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "entry:app"]
