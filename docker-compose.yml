@@ -12,6 +12,8 @@ services:
       - ./src:/app:rw
       - .env:/app/.env:ro
       - ./instructions.txt:/app/instructions.txt:ro
+    ports:
+      - "${HOST_MACHINE_UNSECURE_HOST_PORT}:5000"
     networks:
       - connector
   bc_redis:
