@@ -1260,7 +1260,7 @@ def assets_route(subpath=''):
     
     if request.method == 'POST':  # Update Asset
         # Extract the payload path from the request URI
-        payload_path = f'storage/projectData/ProjectAssets/{subpath}'
+        payload_path = f'storage/projectData/projectAssets/{subpath}'
         
         # Read the raw request data
         data = request.get_data()

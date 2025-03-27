@@ -45,7 +45,7 @@ services:
     links:
       - bc_mysql
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: bc_mysql
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       UPLOAD_LIMIT: ${UPLOAD_LIMIT}
