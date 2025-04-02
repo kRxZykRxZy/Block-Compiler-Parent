@@ -22,8 +22,14 @@ AI_models = [
     {
         "display_name": "Gemini 2.0 Flash",
         "id": "gemini-2.0-flash",
-        "default": True,
         "baseURL": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "API_KEY_TYPE": "gemini"
+    },
+    {
+        "display_name": "Gemini 2.5 Pro",
+        "id":"gemini-2.5-pro-exp-03-25",
+        "default": True,
+        "baseURL":"https://generativelanguage.googleapis.com/v1beta/openai/",
         "API_KEY_TYPE": "gemini"
     },
     {
