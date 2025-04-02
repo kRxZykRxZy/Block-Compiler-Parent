@@ -444,7 +444,10 @@
     height: 79px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 5px
+    margin-bottom: 5px;
+    user-select: none;
+    pointer-events: none;
+
 }
 
 .no_api_key .d {
@@ -452,8 +455,6 @@
     color: #7c7766;
     font-weight: 900;
     z-index: 10;
-    user-select: none;
-    pointer-events: none;
     width: 300px;
     margin-left: auto;
     margin-right: auto;
@@ -511,4 +512,13 @@
     to {
         background-position: 200% center
     }
+}
+
+#addonsPage{
+    color: #4c97ff;
+    cursor: pointer;
+}
+
+#addonsPage:hover{
+    text-decoration: underline;
 }
