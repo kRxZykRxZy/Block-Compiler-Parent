@@ -3,13 +3,13 @@
 }
 
 .container {
-    width: 450px;
-    height: 300px;
     border: 1px solid var(--ui-tertiary);
     border-radius: 6px;
     background-color: var(--ui-primary);
     display: flex;
     flex-direction: column;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
 }
 
 .content {
@@ -18,7 +18,7 @@
 }
 
 .ai-message {
-    max-width: 337.5px;
+    max-width: 75%;
     font-size: 11px;
     margin-top: 10px;
     width: fit-content;
@@ -34,6 +34,7 @@
     margin-left: 10px;
     border-radius: 10px;
     font-size: 11px;
+    line-break: anywhere;
 }
 
 .user-message {
@@ -52,9 +53,10 @@
     margin: 0px;
     margin-left: auto;
     margin-right: 10px;
-    max-width: 250px;
+    max-width: 50%;
     font-size: 11px;
     /*min-width: 78px;*/
+    line-break: anywhere;
 }
 
 .input-container {
@@ -521,4 +523,44 @@
 
 #addonsPage:hover{
     text-decoration: underline;
+}
+
+.left-resize{
+    cursor: ew-resize;
+    height: calc(100% + 4px);
+    width: 2px;
+    min-width: 2px;
+}
+
+.right-resize{
+    cursor: ew-resize;
+    height: calc(100% + 4px);
+    width: 2px;
+    min-width: 2px;
+}
+
+.top-resize{
+    cursor: ns-resize;
+    height: 2px;
+    width: 100%;
+}
+.bottom-resize{
+    cursor: ns-resize;
+    height: 2px;
+    width: 100%;
+}
+
+
+.left-resize:hover{
+    background-color: #4c97ff;
+}
+.right-resize:hover{
+    background-color: #4c97ff;
+}
+
+.top-resize:hover{
+    background-color: #4c97ff;
+}
+.bottom-resize:hover{
+    background-color: #4c97ff;
 }
