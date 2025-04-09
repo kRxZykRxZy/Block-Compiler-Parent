@@ -88,15 +88,16 @@ def deleteProject_routes():
 
             if fonts:
                 for font in fonts:
-                    font_md5ext = font['md5ext']
-                    asset_path = os.path.join('storage/projectData/projectAssets/', font_md5ext)
-                    if os.path.exists(asset_path):
-                        try:
-                            os.unlink(asset_path)
-                        except OSError as e:
-                            print(f"Error deleting font asset {asset_path}: {e}")  # Print error, continue
-                    else:
-                        print(f"Font asset not found: {asset_path}")
+                    if isinstance(font, dict) and 'md5ext' in font: # locally called fonts don't have md5ext
+                        font_md5ext = font['md5ext']
+                        asset_path = os.path.join('storage/projectData/projectAssets/', font_md5ext)
+                        if os.path.exists(asset_path):
+                            try:
+                                os.unlink(asset_path)
+                            except OSError as e:
+                                print(f"Error deleting font asset {asset_path}: {e}")  # Print error, continue
+                        else:
+                            print(f"Font asset not found: {asset_path}")
 
 
 
