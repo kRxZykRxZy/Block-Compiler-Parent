@@ -61,17 +61,18 @@ def deleteProject_routes():
             for sprite in data:
                 if 'costumes' in sprite:
                     for costume in sprite['costumes']:
-                        costume_md5ext = costume['md5ext']
-                        asset_path = os.path.join('storage/projectData/projectAssets/', costume_md5ext)
-                        if costume_md5ext not in ('592bae6f8bb9c8d88401b54ac431f7b6.svg', 'cd21514d0531fdffb22204e0ec5ed84a.svg'):
-                            if os.path.exists(asset_path):
-                                try:
-                                    os.unlink(asset_path)
-                                except OSError as e:
-                                    print(f"Error deleting costume asset {asset_path}: {e}") # Print error but don't stop.  Could also log.
-                                    #  Original PHP code commented out the exit, so this maintains that behavior.
-                            else:
-                                print(f"Costume asset not found: {asset_path}")  #Log or print missing asset
+                        if isinstance(costume, dict) and 'md5ext' in costume: # some assets just don't exist (ghost costumes)
+                            costume_md5ext = costume['md5ext']
+                            asset_path = os.path.join('storage/projectData/projectAssets/', costume_md5ext)
+                            if costume_md5ext not in ('592bae6f8bb9c8d88401b54ac431f7b6.svg', 'cd21514d0531fdffb22204e0ec5ed84a.svg'):
+                                if os.path.exists(asset_path):
+                                    try:
+                                        os.unlink(asset_path)
+                                    except OSError as e:
+                                        print(f"Error deleting costume asset {asset_path}: {e}") # Print error but don't stop.  Could also log.
+                                        #  Original PHP code commented out the exit, so this maintains that behavior.
+                                else:
+                                    print(f"Costume asset not found: {asset_path}")  #Log or print missing asset
 
                 if 'sounds' in sprite:
                     for sound in sprite['sounds']:
