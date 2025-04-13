@@ -23,12 +23,12 @@ def LP_routes():
 
     # Step 2: Get user's projects sorted by timestamp
     query = """
-        SELECT projectID
+        SELECT projectID, EditTS
         FROM projects
         WHERE Owner = %s
         ORDER BY EditTS DESC
     """
     cursor.execute(query, (username,))
     projects = cursor.fetchall()
-    project_ids = [project['projectID'] for project in projects]
-    return jsonify({"status":"true","projectIDs": project_ids})
+    project_data = [{"projectID": project['projectID'], "EditTS": project['EditTS']} for project in projects]
+    return jsonify({"status": "true", "projects": project_data})
