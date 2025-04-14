@@ -1,5 +1,6 @@
 from flask import request, jsonify
 import os
+from datetime import timezone
 
 from API.services.helpers import get_db_connection
 
@@ -30,5 +31,8 @@ def LP_routes():
     """
     cursor.execute(query, (username,))
     projects = cursor.fetchall()
-    project_data = [{"projectID": project['projectID'], "EditTS": project['EditTS']} for project in projects]
+    project_data = [{
+        "projectID": project['projectID'],
+        "EditTS": project['EditTS'].astimezone(timezone.utc).isoformat()
+    } for project in projects]
     return jsonify({"status": "true", "projects": project_data})

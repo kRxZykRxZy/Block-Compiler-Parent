@@ -28,7 +28,8 @@ def UPT_routes():
     # Step 2: Insert or Update user's token in one query
     query = """
     UPDATE projects
-    SET Title = %s
+    SET Title = %s,
+    EditTS = CURRENT_TIMESTAMP
     WHERE projectID = %s
     """
     cursor.execute(query, (title, projectID))
