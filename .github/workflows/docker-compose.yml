@@ -24,7 +24,7 @@ jobs:
         run: cp example.env .env
 
       - name: Build and start services
-        run: docker compose up -d --build
+        run: docker compose -f ./docker-compose.yml up -d --build
 
       - name: Wait for services to initialize
         run: sleep 30
@@ -32,8 +32,6 @@ jobs:
       - name: Show running containers
         run: docker ps
 
-      # Optionally, add health checks or curl tests here
-
       - name: Shut down and clean up
         if: always()
-        run: docker compose down -v
+        run: docker compose -f ./docker-compose.yml down -v
