@@ -21,7 +21,7 @@ jobs:
         uses: docker/setup-docker-action@v2
 
       - name: Copy .env file
-        run: cp .env.example .env
+        run: cp example.env .env
 
       - name: Build and start services
         run: docker-compose up -d --build
